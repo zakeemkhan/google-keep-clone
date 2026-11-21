@@ -19,6 +19,7 @@
   --side-w: 280px;
   --side-w-collapsed: 80px;
   --radius: 8px;
+  --theme-ease: 0.4s ease;
   color-scheme: light;
 }
 
@@ -45,7 +46,7 @@ body {
   font-family: "Roboto", Arial, sans-serif;
   background: var(--bg);
   color: var(--text);
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color var(--theme-ease), color var(--theme-ease);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -65,7 +66,7 @@ svg { fill: currentColor; }
   color: var(--text-muted);
   cursor: pointer;
   flex-shrink: 0;
-  transition: background-color 0.15s;
+  transition: background-color 0.15s, color var(--theme-ease);
 }
 .icon-btn:hover { background: var(--hover); }
 .icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -94,7 +95,7 @@ svg { fill: currentColor; }
   padding: 8px 12px;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
-  transition: box-shadow 0.2s, background-color 0.25s;
+  transition: box-shadow 0.2s, background-color var(--theme-ease), border-color var(--theme-ease);
 }
 .navbar.scrolled { box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2); border-bottom-color: transparent; }
 
@@ -113,9 +114,39 @@ svg { fill: currentColor; }
 .brand-logo { width: 40px; height: 40px; }
 .brand-name { font-size: 22px; white-space: nowrap; }
 
-.icon-sun { display: none; }
-[data-theme="dark"] .icon-sun { display: block; }
-[data-theme="dark"] .icon-moon { display: none; }
+#themeToggle {
+  overflow: hidden;
+}
+#themeToggle.spinning {
+  animation: theme-icon-spin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#themeToggle .icon-moon,
+#themeToggle .icon-sun {
+  grid-area: 1 / 1;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+}
+.icon-sun {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+  pointer-events: none;
+}
+.icon-moon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+[data-theme="dark"] .icon-sun {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+[data-theme="dark"] .icon-moon {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+
+@keyframes theme-icon-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 
 .avatar {
   width: 32px;
@@ -142,7 +173,7 @@ svg { fill: currentColor; }
   flex-shrink: 0;
   padding-top: 8px;
   overflow: hidden;
-  transition: width 0.2s ease;
+  transition: width 0.2s ease, background-color var(--theme-ease);
 }
 .sidebar.collapsed { width: var(--side-w-collapsed); }
 
@@ -159,7 +190,7 @@ svg { fill: currentColor; }
   font-size: 0.875rem;
   font-weight: 500;
   white-space: nowrap;
-  transition: background-color 0.15s, margin 0.2s, border-radius 0.2s;
+  transition: background-color 0.15s, margin 0.2s, border-radius 0.2s, color var(--theme-ease);
 }
 .side-item svg { width: 24px; height: 24px; color: var(--text-muted); flex-shrink: 0; }
 .side-item:hover { background: var(--hover); }
@@ -188,7 +219,7 @@ svg { fill: currentColor; }
   background: var(--surface);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  transition: background-color 0.25s;
+  transition: background-color var(--theme-ease), border-color var(--theme-ease), box-shadow var(--theme-ease);
 }
 [data-theme="dark"] .composer { border: 1px solid var(--border); box-shadow: none; }
 
@@ -255,7 +286,7 @@ svg { fill: currentColor; }
   cursor: grab;
   overflow: hidden;
   word-wrap: break-word;
-  transition: box-shadow 0.15s, background-color 0.25s, border-color 0.25s;
+  transition: box-shadow 0.2s, background-color var(--theme-ease), border-color var(--theme-ease), color var(--theme-ease);
   animation: pop-in 0.18s ease-out;
 }
 .note:hover { box-shadow: var(--shadow-soft); }
@@ -331,6 +362,7 @@ svg { fill: currentColor; }
   color: var(--toast-text);
   font-size: 0.875rem;
   box-shadow: var(--shadow);
+  transition: background-color var(--theme-ease), color var(--theme-ease), box-shadow var(--theme-ease);
 }
 .toast .text-btn { color: #8ab4f8; }
 [data-theme="dark"] .toast .text-btn { color: #1a73e8; }
@@ -422,6 +454,19 @@ svg { fill: currentColor; }
 
 /* ---------- Pinned notes (manual feature) ---------- */
 .pin-btn { opacity: 0.45; font-size: 16px; }
-.note.pinned { border: 2px solid var(--accent); }
+.note.pinned {
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 1px rgba(251, 188, 4, 0.12);
+}
 .note.pinned .pin-btn { opacity: 1; }
 .note.pinned .note-toolbar { opacity: 1; }
+
+/* Dark mode: warm tint + glow so the yellow pin still reads on #202124 */
+[data-theme="dark"] .note.pinned {
+  background: #2b2920;
+  border-color: #fdd663;
+  box-shadow: 0 0 0 1px rgba(253, 214, 99, 0.28), 0 4px 14px rgba(251, 188, 4, 0.12);
+}
+[data-theme="dark"] .note.pinned:hover {
+  box-shadow: 0 0 0 1px rgba(253, 214, 99, 0.4), var(--shadow-soft);
+}

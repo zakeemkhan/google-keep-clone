@@ -275,6 +275,14 @@
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     applyTheme(next);
     try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* ignore */ }
+
+    themeToggle.classList.remove('spinning');
+    void themeToggle.offsetWidth; // restart the rotation if clicked again mid-spin
+    themeToggle.classList.add('spinning');
+  });
+
+  themeToggle.addEventListener('animationend', function (e) {
+    if (e.animationName === 'theme-icon-spin') themeToggle.classList.remove('spinning');
   });
 
   // Follow OS changes only if the user hasn't picked a theme themselves
