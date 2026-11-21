@@ -71,6 +71,7 @@
     card.className = 'note';
     card.dataset.id = note.id;
     card.tabIndex = 0;
+    if (note.pinned) card.classList.add('pinned');
 
     const title = document.createElement('h3');
     title.className = 'note-title';
@@ -90,13 +91,20 @@
     del.setAttribute('aria-label', 'Delete note');
     del.innerHTML = DELETE_ICON;
 
-    toolbar.append(del);
+    const pin = document.createElement('button');
+    pin.type = 'button';
+    pin.className = 'icon-btn pin-btn';
+    pin.title = 'Pin note';
+    pin.textContent = '📌';
+    toolbar.append(pin, del);
     card.append(title, body, toolbar);
     return card;
   }
 
   function render() {
-    grid.replaceChildren(...notes.map(createNoteEl));
+    const pinned = notes.filter(function (n) { return n.pinned; });
+    const others = notes.filter(function (n) { return !n.pinned; });
+    grid.replaceChildren(...pinned.concat(others).map(createNoteEl));
     emptyState.hidden = notes.length > 0;
     layoutMasonry();
   }
@@ -142,7 +150,7 @@
     const body = bodyInput.value.trim();
 
     if (title || body) {
-      notes.unshift({ id: makeId(), title: title, body: body, createdAt: Date.now() });
+      notes.unshift({ id: makeId(), title: title, body: body, createdAt: Date.now(), pinned: false });
       saveNotes();
       render();
     }
@@ -231,7 +239,14 @@
     if (delBtn) {
       deleteNote(delBtn.closest('.note').dataset.id);
     }
-    // 🔧 Your manual feature can handle its own buttons here too
+    const pinBtn = e.target.closest('.pin-btn');
+    if (pinBtn) {
+      const id = pinBtn.closest('.note').dataset.id;
+      const note = notes.find(function (n) { return n.id === id; });
+      note.pinned = !note.pinned;
+      saveNotes();
+      render();
+    }
   });
 
   grid.addEventListener('keydown', function (e) {

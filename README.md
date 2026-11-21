@@ -2,7 +2,7 @@
 
 A responsive Google Keep homepage clone built with plain HTML, CSS and JavaScript. Notes are saved in `localStorage`, so there's no backend.
 
-**Live demo:** _add your Netlify link here_
+**Live demo:** https://zakeem-keep-clone.netlify.app/
 
 ## Features
 
@@ -14,7 +14,7 @@ A responsive Google Keep homepage clone built with plain HTML, CSS and JavaScrip
 - Responsive: multi-column on laptops, 2-column on phones, icon-only sidebar on tablets
 
 ### Custom feature (built manually, without Cursor)
-- _Describe your feature here_
+- **📌 Pin notes**: click the pin on any note to keep it at the top. Pinned notes get a yellow border, and pins are saved in localStorage so they survive a refresh.
 
 ### AI-assisted features (built with Cursor)
 1. **Dark mode**: toggle in the navbar. It remembers your choice, follows your OS setting by default, and doesn't flash white on load.
