@@ -74,8 +74,13 @@
         </div>
       </form>
 
-      <!-- Masonry notes grid -->
-      <section class="notes-grid" id="notesGrid" aria-live="polite"></section>
+      <!-- Masonry notes: pinned and others stay in separate grids so drag cannot mix them -->
+      <section class="notes-board" id="notesBoard" aria-live="polite">
+        <h2 class="notes-heading" id="pinnedHeading" hidden>PINNED</h2>
+        <div class="notes-grid" id="pinnedGrid"></div>
+        <h2 class="notes-heading" id="othersHeading" hidden>OTHERS</h2>
+        <div class="notes-grid" id="notesGrid"></div>
+      </section>
 
       <div class="empty-state" id="emptyState" hidden>
         <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>

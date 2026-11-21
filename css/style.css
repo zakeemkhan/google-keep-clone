@@ -264,7 +264,22 @@ svg { fill: currentColor; }
 
 /* ---------- Masonry notes grid ----------
    Each card gets a grid-row span from JS, based on its height.
-   grid-auto-rows is tiny so the span is precise.               */
+   grid-auto-rows is tiny so the span is precise.
+   Pinned and others are separate grids so drag stays in-group. */
+.notes-heading {
+  max-width: 1280px;
+  margin: 8px auto 12px;
+  padding: 0 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.notes-heading[hidden] { display: none; }
+#othersHeading { margin-top: 28px; }
+.notes-grid:empty { display: none; }
+
 .notes-grid {
   --gap: 16px;
   display: grid;

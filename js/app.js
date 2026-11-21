@@ -48,7 +48,11 @@
   let notes = loadNotes();
 
   /* ---------- DOM refs ---------- */
+  const notesBoard = document.getElementById('notesBoard');
+  const pinnedGrid = document.getElementById('pinnedGrid');
   const grid = document.getElementById('notesGrid');
+  const pinnedHeading = document.getElementById('pinnedHeading');
+  const othersHeading = document.getElementById('othersHeading');
   const emptyState = document.getElementById('emptyState');
   const composer = document.getElementById('composer');
   const titleInput = document.getElementById('noteTitle');
@@ -104,7 +108,12 @@
   function render() {
     const pinned = notes.filter(function (n) { return n.pinned; });
     const others = notes.filter(function (n) { return !n.pinned; });
-    grid.replaceChildren(...pinned.concat(others).map(createNoteEl));
+    const showGroups = pinned.length > 0;
+
+    pinnedGrid.replaceChildren(...pinned.map(createNoteEl));
+    grid.replaceChildren(...others.map(createNoteEl));
+    pinnedHeading.hidden = !showGroups;
+    othersHeading.hidden = !showGroups || others.length === 0;
     emptyState.hidden = notes.length > 0;
     layoutMasonry();
   }
@@ -116,14 +125,15 @@
   const ROW_HEIGHT = 2;
 
   function sizeCard(card) {
-    const gap = parseFloat(getComputedStyle(grid).getPropertyValue('--gap')) || 16;
+    const host = card.parentElement;
+    const gap = parseFloat(getComputedStyle(host).getPropertyValue('--gap')) || 16;
     card.style.gridRowEnd = 'auto';
     const height = card.getBoundingClientRect().height;
     card.style.gridRowEnd = 'span ' + Math.ceil((height + gap) / ROW_HEIGHT);
   }
 
   function layoutMasonry() {
-    grid.querySelectorAll('.note').forEach(sizeCard);
+    notesBoard.querySelectorAll('.note').forEach(sizeCard);
   }
 
   // Re-layout when the window resizes (column widths change → heights change)
@@ -198,7 +208,7 @@
     const index = notes.findIndex(function (n) { return n.id === id; });
     if (index === -1) return;
 
-    const card = grid.querySelector('[data-id="' + id + '"]');
+    const card = notesBoard.querySelector('[data-id="' + id + '"]');
     lastDeleted = { note: notes[index], index: index };
     notes.splice(index, 1);
     saveNotes();
@@ -234,7 +244,7 @@
   });
 
   // One listener for every card's buttons (event delegation)
-  grid.addEventListener('click', function (e) {
+  notesBoard.addEventListener('click', function (e) {
     const delBtn = e.target.closest('.delete-btn');
     if (delBtn) {
       deleteNote(delBtn.closest('.note').dataset.id);
@@ -249,7 +259,7 @@
     }
   });
 
-  grid.addEventListener('keydown', function (e) {
+  notesBoard.addEventListener('keydown', function (e) {
     if ((e.key === 'Delete' || e.key === 'Backspace') && e.target.classList.contains('note')) {
       deleteNote(e.target.dataset.id);
     }
@@ -294,14 +304,27 @@
 
   /* ---------- 7. AI feature #2 — Drag-and-drop reordering ----------
      SortableJS handles mouse + touch. On phones you long-press
-     (250 ms) to pick a note up, so normal scrolling still works. */
+     (250 ms) to pick a note up, so normal scrolling still works.
+     Pinned and unpinned live in separate lists so a drag cannot
+     mix the two groups. Order is always saved pinned-first. */
+  function persistNoteOrder() {
+    const order = Array.from(pinnedGrid.querySelectorAll('.note'))
+      .concat(Array.from(grid.querySelectorAll('.note')))
+      .map(function (el) { return el.dataset.id; });
+    const byId = new Map(notes.map(function (n) { return [n.id, n]; }));
+    notes = order.map(function (id) { return byId.get(id); }).filter(Boolean);
+    saveNotes();
+    layoutMasonry();
+  }
+
   if (window.Sortable) {
-    Sortable.create(grid, {
+    const sortableOpts = {
       animation: 180,
       easing: 'cubic-bezier(0.2, 0, 0, 1)',
       delay: 250,
       delayOnTouchOnly: true,
       touchStartThreshold: 5,
+      draggable: '.note',
       filter: '.icon-btn',       // clicking buttons never starts a drag
       preventOnFilter: false,
       ghostClass: 'drag-ghost',
@@ -309,15 +332,10 @@
       dragClass: 'dragging',
       forceFallback: true,       // consistent look on all browsers
       fallbackOnBody: true,
-      onEnd: function () {
-        // Read the new order from the DOM and save it
-        const order = Array.from(grid.children).map(function (el) { return el.dataset.id; });
-        const byId = new Map(notes.map(function (n) { return [n.id, n]; }));
-        notes = order.map(function (id) { return byId.get(id); }).filter(Boolean);
-        saveNotes();
-        layoutMasonry();
-      }
-    });
+      onEnd: persistNoteOrder
+    };
+    Sortable.create(pinnedGrid, Object.assign({}, sortableOpts));
+    Sortable.create(grid, Object.assign({}, sortableOpts));
   }
 
   /* ---------- 8. Navbar / sidebar ---------- */
