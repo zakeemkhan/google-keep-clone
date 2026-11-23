@@ -1,6 +1,6 @@
-# Keep Clone
+# Keep Clone (React)
 
-A responsive Google Keep homepage clone built with plain HTML, CSS and JavaScript. Notes are saved in `localStorage`, so there's no backend.
+A responsive Google Keep homepage clone built with **React + Vite**. Notes are saved in `localStorage`, so there's no backend.
 
 **Live demo:** https://zakeem-keep-clone.netlify.app/
 
@@ -9,27 +9,37 @@ A responsive Google Keep homepage clone built with plain HTML, CSS and JavaScrip
 ### Core
 - Navigation bar with a collapsible sidebar (slide-in drawer on phones)
 - "Take a note…" composer that expands, grows as you type, and saves on **Close**, **Ctrl/Cmd + Enter**, **Esc** or a click outside
-- Masonry notes grid (JS-sized CSS Grid, so cards pack tightly)
+- Masonry notes grid (CSS Grid sized by a `useMasonry` hook)
 - Delete notes, with a 5-second **Undo** toast
 - Responsive: multi-column on laptops, 2-column on phones, icon-only sidebar on tablets
 
 ### Custom feature (built manually, without Cursor)
-- **📌 Pin notes**: click the pin on any note to keep it at the top. Pinned notes get a yellow border, and pins are saved in localStorage so they survive a refresh.
+- _Describe your feature here_
 
-### AI-assisted features (built with Cursor)
-1. **Dark mode**: toggle in the navbar. It remembers your choice, follows your OS setting by default, and doesn't flash white on load.
-2. **Drag-and-drop reordering**: drag notes to rearrange them. On phones, long-press (250 ms) to pick a note up. The order is saved. Built on [SortableJS](https://github.com/SortableJS/Sortable).
+### AI-assisted features (built with AI help)
+1. **Dark mode** (`useTheme` hook): smooth colour fade and spinning sun/moon icon when switching. It remembers your choice, follows the OS setting by default, and never flashes white on load.
+2. **Drag-and-drop reordering** (`NotesGrid` + SortableJS): drag notes to rearrange them, or long-press on phones. The order is saved, and notes can only be reordered within their own group.
 
 ## Project structure
 ```
 index.html
-css/style.css
-js/app.js
-js/vendor/Sortable.min.js
+src/
+  main.jsx              – starts React
+  App.jsx               – notes state: add, delete/undo, reorder
+  App.css               – all styles (light + dark theme)
+  components/
+    Navbar.jsx  Sidebar.jsx  NoteComposer.jsx
+    NotesGrid.jsx  NoteCard.jsx  Toast.jsx  Icons.jsx
+  hooks/
+    useLocalStorage.js  useTheme.js  useMasonry.js  useMediaQuery.js
 ```
 
 ## Run locally
-Open `index.html` in a browser, or use the VS Code Live Server extension.
+```
+npm install
+npm run dev
+```
+Then open the link it prints (usually http://localhost:5173).
 
 ## Deploy
-Deployed on Netlify as a static site: no build command, publish directory `/`.
+Netlify reads `netlify.toml`: build command `npm run build`, publish directory `dist`.

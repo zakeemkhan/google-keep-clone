@@ -1,101 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#ffffff" />
-  <title>Keep Clone</title>
-  <!-- Set theme before first paint so dark mode never flashes white -->
-  <script>
-    (function () {
-      try {
-        var saved = localStorage.getItem('keep-clone-theme');
-        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
-      } catch (e) {
-        document.documentElement.dataset.theme = 'light';
-      }
-    })();
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css" />
-</head>
-<body>
-  <!-- ========== NAVIGATION BAR ========== -->
-  <header class="navbar">
-    <div class="nav-left">
-      <button class="icon-btn" id="menuBtn" aria-label="Main menu" aria-expanded="false">
-        <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
-      </button>
-      <a href="#" class="brand">
-        <svg class="brand-logo" viewBox="0 0 40 40" aria-hidden="true">
-          <rect x="4" y="2" width="32" height="36" rx="4" fill="#fbbc04"/>
-          <circle cx="20" cy="17" r="7" fill="#fff"/>
-          <rect x="17" y="24" width="6" height="5" rx="1" fill="#fff"/>
-        </svg>
-        <span class="brand-name">Keep Clone</span>
-      </a>
-    </div>
-
-    <!-- 🔧 Slot for your manual feature (e.g. a search bar) -->
-    <div class="nav-center" id="navCenter"></div>
-
-    <div class="nav-right">
-      <button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
-        <svg class="icon-moon" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.39 5.39 0 0 1-4.4 2.26 5.4 5.4 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
-        <svg class="icon-sun" viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM2 13h2a1 1 0 0 0 0-2H2a1 1 0 0 0 0 2zm18 0h2a1 1 0 0 0 0-2h-2a1 1 0 0 0 0 2zM11 2v2a1 1 0 0 0 2 0V2a1 1 0 0 0-2 0zm0 18v2a1 1 0 0 0 2 0v-2a1 1 0 0 0-2 0zM5.99 4.58a1 1 0 0 0-1.41 1.41l1.06 1.06a1 1 0 0 0 1.41-1.41L5.99 4.58zm12.37 12.37a1 1 0 0 0-1.41 1.41l1.06 1.06a1 1 0 0 0 1.41-1.41l-1.06-1.06zm1.06-10.96a1 1 0 0 0-1.41-1.41l-1.06 1.06a1 1 0 0 0 1.41 1.41l1.06-1.06zM7.05 18.36a1 1 0 0 0-1.41-1.41l-1.06 1.06a1 1 0 0 0 1.41 1.41l1.06-1.06z"/></svg>
-      </button>
-      <div class="avatar" title="Signed in (demo)">M</div>
-    </div>
-  </header>
-
-  <div class="layout">
-    <!-- ========== SIDEBAR ========== -->
-    <nav class="sidebar" id="sidebar" aria-label="Sections">
-      <a href="#" class="side-item active">
-        <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
-        <span>Notes</span>
-      </a>
-      <!-- 🔧 Category tags could add label links here -->
-    </nav>
-    <div class="scrim" id="scrim"></div>
-
-    <!-- ========== MAIN ========== -->
-    <main class="main">
-      <!-- Create Note input -->
-      <form class="composer" id="composer" autocomplete="off">
-        <input class="composer-title" id="noteTitle" type="text" placeholder="Title" maxlength="200" />
-        <textarea class="composer-body" id="noteBody" placeholder="Take a note…" rows="1"></textarea>
-        <div class="composer-actions">
-          <span class="composer-hint">Ctrl + Enter to save</span>
-          <button type="button" class="text-btn" id="closeComposer">Close</button>
-        </div>
-      </form>
-
-      <!-- Masonry notes: pinned and others stay in separate grids so drag cannot mix them -->
-      <section class="notes-board" id="notesBoard" aria-live="polite">
-        <h2 class="notes-heading" id="pinnedHeading" hidden>PINNED</h2>
-        <div class="notes-grid" id="pinnedGrid"></div>
-        <h2 class="notes-heading" id="othersHeading" hidden>OTHERS</h2>
-        <div class="notes-grid" id="notesGrid"></div>
-      </section>
-
-      <div class="empty-state" id="emptyState" hidden>
-        <svg viewBox="0 0 24 24"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
-        <p>Notes that you add appear here</p>
-      </div>
-    </main>
-  </div>
-
-  <!-- Undo toast -->
-  <div class="toast" id="toast" role="status" hidden>
-    <span>Note deleted</span>
-    <button type="button" class="text-btn" id="undoBtn">Undo</button>
-  </div>
-
-  <script src="js/vendor/Sortable.min.js"></script>
-  <script src="js/app.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Keep Clone</title>
+    <!-- Apply the saved theme before React loads, so dark mode never flashes white -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('keep-clone-theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.dataset.theme = saved || (prefersDark ? 'dark' : 'light');
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
