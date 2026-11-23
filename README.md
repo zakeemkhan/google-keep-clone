@@ -14,7 +14,7 @@ A responsive Google Keep homepage clone built with **React + Vite**. Notes are s
 - Responsive: multi-column on laptops, 2-column on phones, icon-only sidebar on tablets
 
 ### Custom feature (built manually, without Cursor)
-- _Describe your feature here_
+- **📌 Pin notes**: click the pin on any note to move it into a "Pinned" section at the top. Pinned notes get a yellow border (gold glow in dark mode) and pins are saved in localStorage. Built with a `togglePin` function in `App.jsx`, an `onTogglePin` prop on `NoteCard`, and two `NotesGrid` components (Pinned / Others).
 
 ### AI-assisted features (built with AI help)
 1. **Dark mode** (`useTheme` hook): smooth colour fade and spinning sun/moon icon when switching. It remembers your choice, follows the OS setting by default, and never flashes white on load.

@@ -35,7 +35,7 @@ export default function App() {
 
   /* ---------- Add ---------- */
   function addNote({ title, body }) {
-    const newNote = { id: makeId(), title, body, createdAt: Date.now() };
+    const newNote = { id: makeId(), title, body, createdAt: Date.now(), pinned: false };
     setNotes((prev) => [newNote, ...prev]);
   }
 
@@ -67,6 +67,13 @@ export default function App() {
 
   useEffect(() => () => clearTimeout(toastTimer.current), []);
 
+  /* ---------- Pin / unpin (manual feature) ---------- */
+  function togglePin(id) {
+    setNotes((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, pinned: !n.pinned } : n))
+    );
+  }
+
   /* ---------- Drag-and-drop: move one note to another note's spot ---------- */
   function moveNote(movedId, targetId) {
     setNotes((prev) => {
@@ -79,6 +86,9 @@ export default function App() {
       return next;
     });
   }
+  const pinnedNotes = notes.filter((n) => n.pinned);
+  const otherNotes = notes.filter((n) => !n.pinned);
+
 
   return (
     <>
@@ -100,9 +110,21 @@ export default function App() {
         <main className="main">
           <NoteComposer onAdd={addNote} />
 
-          {/* 🔧 Manual feature: you could split notes into groups here,
-                 and render one <NotesGrid> per group with a label. */}
-          <NotesGrid notes={notes} onMove={moveNote} onDelete={deleteNote} />
+
+          <NotesGrid
+            label={pinnedNotes.length > 0 ? 'Pinned' : ''}
+            notes={pinnedNotes}
+            onMove={moveNote}
+            onDelete={deleteNote}
+            onTogglePin={togglePin}
+          />
+          <NotesGrid
+            label={pinnedNotes.length > 0 ? 'Others' : ''}
+            notes={otherNotes}
+            onMove={moveNote}
+            onDelete={deleteNote}
+            onTogglePin={togglePin}
+          />
 
           {notes.length === 0 && (
             <div className="empty-state">
